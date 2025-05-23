@@ -1,0 +1,13 @@
+# Python dependencies for backend integration
+fastapi==0.95.1
+uvicorn==0.22.0
+sqlalchemy==2.0.12
+pymysql==1.0.3
+python-dotenv==1.0.0
+pydantic==1.10.7
+firebase-admin==6.1.0
+boto3==1.26.129
+python-jose==3.3.0
+passlib==1.7.4
+python-multipart==0.0.6
+bcrypt==4.0.1
