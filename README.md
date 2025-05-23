@@ -31,8 +31,8 @@ A premium-quality, production-ready frontend website for an Organised Local Mark
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/Vivek8968/hyperlocalbymanus.git
-   cd hyperlocalbymanus-frontend
+   git clone https://github.com/Vivek8968/localmarket-frontend.git
+   cd localmarket-frontend
    ```
 
 2. Install dependencies:
