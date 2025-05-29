@@ -13,6 +13,7 @@ export interface Shop {
   categories: string[];
   rating?: number;
   isOpen?: boolean;
+  distance?: number; // Distance in kilometers
 }
 
 export interface Product {

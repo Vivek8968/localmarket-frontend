@@ -6,91 +6,7 @@ import ShopCard from '@/components/ShopCard';
 import ProductCard from '@/components/ProductCard';
 import { Shop, Product, SearchResult } from '@/types';
 
-// Mock search data
-const mockSearchResults: { [key: string]: SearchResult } = {
-  'iphone': {
-    shops: [
-      {
-        id: '1',
-        name: 'TechWorld Electronics',
-        address: 'Shop 12, Main Market, Sector 15',
-        phone: '+91 98765 43210',
-        whatsapp: '+91 98765 43210',
-        location: { latitude: 28.5355, longitude: 77.3910 },
-        categories: ['electronics'],
-        rating: 4.5,
-        isOpen: true,
-        image: 'https://via.placeholder.com/300x200?text=TechWorld+Electronics'
-      }
-    ],
-    products: [
-      {
-        id: 'p1',
-        name: 'iPhone 15 Pro',
-        description: 'Latest iPhone with A17 Pro chip',
-        price: 134900,
-        category: 'electronics',
-        subcategory: 'mobile-phones',
-        shopId: '1',
-        inStock: true,
-        brand: 'Apple',
-        image: 'https://via.placeholder.com/300x300?text=iPhone+15+Pro',
-        shop: {
-          id: '1',
-          name: 'TechWorld Electronics',
-          address: 'Shop 12, Main Market, Sector 15',
-          phone: '+91 98765 43210',
-          whatsapp: '+91 98765 43210',
-          location: { latitude: 28.5355, longitude: 77.3910 },
-          categories: ['electronics'],
-          rating: 4.5,
-          isOpen: true
-        }
-      }
-    ]
-  },
-  'battery': {
-    shops: [
-      {
-        id: '2',
-        name: 'Battery Hub',
-        address: 'Plot 45, Industrial Area, Phase 2',
-        phone: '+91 98765 43211',
-        whatsapp: '+91 98765 43211',
-        location: { latitude: 28.5365, longitude: 77.3920 },
-        categories: ['batteries'],
-        rating: 4.3,
-        isOpen: true,
-        image: 'https://via.placeholder.com/300x200?text=Battery+Hub'
-      }
-    ],
-    products: [
-      {
-        id: 'p4',
-        name: 'Exide Car Battery',
-        description: '12V 65Ah maintenance-free battery',
-        price: 8500,
-        category: 'batteries',
-        subcategory: 'car-batteries',
-        shopId: '2',
-        inStock: true,
-        brand: 'Exide',
-        image: 'https://via.placeholder.com/300x300?text=Car+Battery',
-        shop: {
-          id: '2',
-          name: 'Battery Hub',
-          address: 'Plot 45, Industrial Area, Phase 2',
-          phone: '+91 98765 43211',
-          whatsapp: '+91 98765 43211',
-          location: { latitude: 28.5365, longitude: 77.3920 },
-          categories: ['batteries'],
-          rating: 4.3,
-          isOpen: true
-        }
-      }
-    ]
-  }
-};
+
 
 function SearchContent() {
   const searchParams = useSearchParams();
@@ -109,24 +25,91 @@ function SearchContent() {
   const performSearch = async (searchQuery: string) => {
     setLoading(true);
     try {
-      // Try to use backend API first
       const { api } = await import('@/lib/api');
-      const userLocation = { latitude: 28.5355, longitude: 77.3910 }; // Default location
       
-      try {
-        const results = await api.search(searchQuery, userLocation);
-        if (results && results.data) {
-          setSearchResults(results.data);
-        } else {
-          // Fallback to mock data if backend doesn't return expected format
-          const fallbackResults = mockSearchResults[searchQuery.toLowerCase()] || { shops: [], products: [] };
-          setSearchResults(fallbackResults);
+      // Get user location (try to get from localStorage or use default)
+      let userLocation = { latitude: 28.5355, longitude: 77.3910 }; // Default location
+      
+      if (navigator.geolocation) {
+        try {
+          const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject, {
+              timeout: 5000,
+              maximumAge: 300000 // 5 minutes
+            });
+          });
+          userLocation = {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude
+          };
+        } catch (geoError) {
+          console.log('Could not get current location, using default');
         }
-      } catch (apiError) {
-        console.log('Backend API not available, using mock data:', apiError);
-        // Fallback to mock data if backend is not available
-        const fallbackResults = mockSearchResults[searchQuery.toLowerCase()] || { shops: [], products: [] };
-        setSearchResults(fallbackResults);
+      }
+      
+      const results = await api.search(searchQuery, userLocation);
+      
+      if (results && results.data) {
+        // Transform backend data to frontend format
+        const transformedResults: SearchResult = {
+          shops: [],
+          products: []
+        };
+
+        // Transform shops
+        if (results.data.shops && Array.isArray(results.data.shops)) {
+          transformedResults.shops = results.data.shops.map((shop: any) => ({
+            id: shop.id.toString(),
+            name: shop.name || 'Unnamed Shop',
+            address: shop.address || 'Address not provided',
+            phone: shop.phone || shop.whatsapp_number || '',
+            whatsapp: shop.whatsapp_number || shop.phone || '',
+            location: {
+              latitude: parseFloat(shop.latitude) || userLocation.latitude,
+              longitude: parseFloat(shop.longitude) || userLocation.longitude
+            },
+            categories: shop.categories || ['general'],
+            rating: parseFloat(shop.rating) || 4.0,
+            isOpen: shop.is_open !== undefined ? shop.is_open : true,
+            image: shop.image_url || `https://via.placeholder.com/300x200?text=${encodeURIComponent(shop.name || 'Shop')}`,
+            distance: shop.distance || null
+          }));
+        }
+
+        // Transform products
+        if (results.data.products && Array.isArray(results.data.products)) {
+          transformedResults.products = results.data.products.map((product: any) => ({
+            id: product.id.toString(),
+            name: product.name || 'Unnamed Product',
+            description: product.description || '',
+            price: parseFloat(product.price) || 0,
+            category: product.category || 'general',
+            subcategory: product.subcategory || product.category,
+            shopId: product.shop_id?.toString() || '',
+            inStock: product.in_stock !== undefined ? product.in_stock : true,
+            brand: product.brand || '',
+            image: product.image_url || `https://via.placeholder.com/300x300?text=${encodeURIComponent(product.name || 'Product')}`,
+            shop: product.shop ? {
+              id: product.shop.id.toString(),
+              name: product.shop.name || 'Unnamed Shop',
+              address: product.shop.address || 'Address not provided',
+              phone: product.shop.phone || product.shop.whatsapp_number || '',
+              whatsapp: product.shop.whatsapp_number || product.shop.phone || '',
+              location: {
+                latitude: parseFloat(product.shop.latitude) || userLocation.latitude,
+                longitude: parseFloat(product.shop.longitude) || userLocation.longitude
+              },
+              categories: product.shop.categories || ['general'],
+              rating: parseFloat(product.shop.rating) || 4.0,
+              isOpen: product.shop.is_open !== undefined ? product.shop.is_open : true
+            } : undefined
+          }));
+        }
+
+        setSearchResults(transformedResults);
+      } else {
+        console.log('No search results from backend');
+        setSearchResults({ shops: [], products: [] });
       }
     } catch (error) {
       console.error('Error performing search:', error);

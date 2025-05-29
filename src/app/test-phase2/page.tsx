@@ -168,18 +168,21 @@ const Phase2TestPage: React.FC = () => {
 
           <TestItem
             name="Dashboard Routing"
+            testKey="dashboard-routing"
             status={getTestStatus('dashboard-routing', true)}
             description="/dashboard route redirects users to appropriate dashboard"
           />
           
           <TestItem
             name="Seller Dashboard Access"
+            testKey="seller-dashboard"
             status={getTestStatus('seller-dashboard', userRole === 'seller' || userRole === 'admin')}
             description="Seller dashboard accessible to sellers and admins"
           />
           
           <TestItem
             name="Admin Dashboard Access"
+            testKey="admin-dashboard"
             status={getTestStatus('admin-dashboard', userRole === 'admin')}
             description="Admin dashboard accessible only to admins"
           />
@@ -224,18 +227,21 @@ const Phase2TestPage: React.FC = () => {
 
             <TestItem
               name="Shop Profile Management"
+              testKey="shop-profile"
               status={getTestStatus('shop-profile', true)}
               description="Sellers can create and update shop information"
             />
             
             <TestItem
               name="Product Management"
+              testKey="product-mgmt"
               status={getTestStatus('product-mgmt', true)}
               description="Add products from catalog and manage inventory"
             />
             
             <TestItem
               name="Inventory Tracking"
+              testKey="inventory"
               status={getTestStatus('inventory', true)}
               description="Real-time stock management and low stock alerts"
             />
@@ -281,18 +287,21 @@ const Phase2TestPage: React.FC = () => {
 
             <TestItem
               name="User Management"
+              testKey="user-mgmt"
               status={getTestStatus('user-mgmt', true)}
               description="View all users and manage role assignments"
             />
             
             <TestItem
               name="Shop Management"
+              testKey="shop-mgmt"
               status={getTestStatus('shop-mgmt', true)}
               description="Monitor and manage all shops on the platform"
             />
             
             <TestItem
               name="Analytics Dashboard"
+              testKey="analytics"
               status={getTestStatus('analytics', true)}
               description="Platform usage statistics and growth metrics"
             />
@@ -317,18 +326,21 @@ const Phase2TestPage: React.FC = () => {
 
           <TestItem
             name="Firebase Storage Integration"
+            testKey="firebase-storage"
             status={getTestStatus('firebase-storage', !!testImageUrl)}
             description="Images upload to Firebase Storage with fallback support"
           />
           
           <TestItem
             name="Backend Upload API"
+            testKey="backend-upload"
             status={getTestStatus('backend-upload', true)}
             description="Primary upload through backend API with Firebase fallback"
           />
           
           <TestItem
             name="Image Validation"
+            testKey="image-validation"
             status={getTestStatus('image-validation', true)}
             description="File type and size validation before upload"
           />
@@ -338,24 +350,28 @@ const Phase2TestPage: React.FC = () => {
         <TestSection title="🔄 State Management & Testing">
           <TestItem
             name="Authentication State"
+            testKey="auth-state"
             status={getTestStatus('auth-state', isAuthenticated)}
             description="User authentication state persists across page reloads"
           />
           
           <TestItem
             name="Role-Based Rendering"
+            testKey="role-rendering"
             status={getTestStatus('role-rendering', userRole !== null)}
             description="UI components render based on user role"
           />
           
           <TestItem
             name="API Integration"
+            testKey="api-integration"
             status={getTestStatus('api-integration', true)}
             description="All dashboard features integrate with backend APIs"
           />
           
           <TestItem
             name="Error Handling"
+            testKey="error-handling"
             status={getTestStatus('error-handling', true)}
             description="Graceful error handling and user feedback"
           />

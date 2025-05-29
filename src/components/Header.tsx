@@ -11,7 +11,7 @@ import { useAuth } from '@/contexts/AuthContext';
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const { user, loading, logout } = useAuth();
+  const { user, firebaseUser, loading, logout } = useAuth();
   const router = useRouter();
 
   const categories = [
@@ -79,9 +79,9 @@ const Header = () => {
             ) : user ? (
               <div className="flex items-center space-x-3">
                 <div className="flex items-center space-x-2">
-                  {user.photoURL ? (
+                  {firebaseUser?.photoURL ? (
                     <img
-                      src={user.photoURL}
+                      src={firebaseUser.photoURL}
                       alt="Profile"
                       className="w-8 h-8 rounded-full"
                     />
@@ -164,9 +164,9 @@ const Header = () => {
                 ) : user ? (
                   <div className="space-y-3">
                     <div className="flex items-center space-x-3">
-                      {user.photoURL ? (
+                      {firebaseUser?.photoURL ? (
                         <img
-                          src={user.photoURL}
+                          src={firebaseUser.photoURL}
                           alt="Profile"
                           className="w-10 h-10 rounded-full"
                         />

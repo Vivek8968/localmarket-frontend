@@ -6,124 +6,107 @@ import LocationSelector from '@/components/LocationSelector';
 import CategoryGrid from '@/components/CategoryGrid';
 import { Shop, Location } from '@/types';
 
-// Mock data for demonstration
-const mockShops: Shop[] = [
-  {
-    id: '1',
-    name: 'TechWorld Electronics',
-    address: 'Shop 12, Main Market, Sector 15',
-    phone: '+91 98765 43210',
-    whatsapp: '+91 98765 43210',
-    location: { latitude: 28.5355, longitude: 77.3910 },
-    categories: ['electronics'],
-    rating: 4.5,
-    isOpen: true,
-    image: 'https://via.placeholder.com/300x200?text=TechWorld+Electronics'
-  },
-  {
-    id: '2',
-    name: 'Battery Hub',
-    address: 'Plot 45, Industrial Area, Phase 2',
-    phone: '+91 98765 43211',
-    whatsapp: '+91 98765 43211',
-    location: { latitude: 28.5365, longitude: 77.3920 },
-    categories: ['batteries'],
-    rating: 4.3,
-    isOpen: true,
-    image: 'https://via.placeholder.com/300x200?text=Battery+Hub'
-  },
-  {
-    id: '3',
-    name: 'Mobile Palace',
-    address: 'F-23, City Center Mall',
-    phone: '+91 98765 43212',
-    whatsapp: '+91 98765 43212',
-    location: { latitude: 28.5345, longitude: 77.3900 },
-    categories: ['electronics'],
-    rating: 4.7,
-    isOpen: false,
-    image: 'https://via.placeholder.com/300x200?text=Mobile+Palace'
-  },
-  {
-    id: '4',
-    name: 'PowerMax Batteries',
-    address: 'B-67, Auto Market',
-    phone: '+91 98765 43213',
-    whatsapp: '+91 98765 43213',
-    location: { latitude: 28.5375, longitude: 77.3930 },
-    categories: ['batteries'],
-    rating: 4.1,
-    isOpen: true,
-    image: 'https://via.placeholder.com/300x200?text=PowerMax+Batteries'
-  }
-];
-
 export default function HomePage() {
   const [shops, setShops] = useState<Shop[]>([]);
   const [location, setLocation] = useState<Location | null>(null);
   const [loading, setLoading] = useState(false);
+  const [locationError, setLocationError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Get user's current location
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const userLocation = {
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude
-          };
-          setLocation(userLocation);
-          loadShops(userLocation);
-        },
-        (error) => {
-          console.error('Error getting location:', error);
-          // Use default location (Gurgaon)
-          const defaultLocation = { latitude: 28.5355, longitude: 77.3910 };
-          setLocation(defaultLocation);
-          loadShops(defaultLocation);
-        }
-      );
-    } else {
-      // Use default location
+    requestLocationAndLoadShops();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const requestLocationAndLoadShops = () => {
+    setLocationError(null);
+    
+    if (!navigator.geolocation) {
+      setLocationError('Geolocation is not supported by this browser');
       const defaultLocation = { latitude: 28.5355, longitude: 77.3910 };
       setLocation(defaultLocation);
       loadShops(defaultLocation);
+      return;
     }
-  }, []);
+
+    setLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const userLocation = {
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude
+        };
+        setLocation(userLocation);
+        loadShops(userLocation);
+      },
+      (error) => {
+        console.error('Geolocation error:', error);
+        let errorMessage = 'Unable to get your location';
+        
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            errorMessage = 'Location access denied. Please enable location services.';
+            break;
+          case error.POSITION_UNAVAILABLE:
+            errorMessage = 'Location information unavailable.';
+            break;
+          case error.TIMEOUT:
+            errorMessage = 'Location request timed out.';
+            break;
+        }
+        
+        setLocationError(errorMessage);
+        const defaultLocation = { latitude: 28.5355, longitude: 77.3910 };
+        setLocation(defaultLocation);
+        loadShops(defaultLocation);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 300000 // 5 minutes
+      }
+    );
+  };
+
+
 
   const loadShops = async (userLocation: Location) => {
     setLoading(true);
     try {
-      // Try to load from backend API
       const { api } = await import('@/lib/api');
       const response = await api.getShops(userLocation);
       
-      if (response.data && Array.isArray(response.data)) {
+      if (response && response.data && Array.isArray(response.data)) {
         // Transform backend data to frontend format
         const transformedShops = response.data.map((shop: any) => ({
           id: shop.id.toString(),
-          name: shop.name,
+          name: shop.name || 'Unnamed Shop',
           address: shop.address || 'Address not provided',
-          phone: shop.whatsapp_number || '',
-          whatsapp: shop.whatsapp_number || '',
+          phone: shop.phone || shop.whatsapp_number || '',
+          whatsapp: shop.whatsapp_number || shop.phone || '',
           location: { 
-            latitude: shop.latitude || 0, 
-            longitude: shop.longitude || 0 
+            latitude: parseFloat(shop.latitude) || userLocation.latitude, 
+            longitude: parseFloat(shop.longitude) || userLocation.longitude
           },
-          categories: ['general'], // TODO: Add categories from backend
-          rating: 4.0, // TODO: Add ratings from backend
-          isOpen: true, // TODO: Add business hours from backend
-          image: shop.image_url || 'https://via.placeholder.com/300x200?text=' + encodeURIComponent(shop.name)
+          categories: shop.categories || ['general'],
+          rating: parseFloat(shop.rating) || 4.0,
+          isOpen: shop.is_open !== undefined ? shop.is_open : true,
+          image: shop.image_url || `https://via.placeholder.com/300x200?text=${encodeURIComponent(shop.name || 'Shop')}`,
+          distance: shop.distance || null
         }));
+        
+        // Sort by distance if available
+        transformedShops.sort((a, b) => {
+          if (a.distance && b.distance) return a.distance - b.distance;
+          return 0;
+        });
+        
         setShops(transformedShops);
       } else {
-        // Fallback to mock data if backend fails
-        setShops(mockShops);
+        console.log('No shops data received from backend');
+        setShops([]);
       }
     } catch (error) {
-      console.error('Error loading shops from backend, using mock data:', error);
-      // Fallback to mock data
-      setShops(mockShops);
+      console.error('Error loading shops from backend:', error);
+      setShops([]);
     } finally {
       setLoading(false);
     }
@@ -184,14 +167,30 @@ export default function HomePage() {
                 Discover trusted local businesses in your area
               </p>
             </div>
-            {location && (
-              <div className="mt-4 md:mt-0 flex items-center space-x-2 bg-white px-4 py-2 rounded-full shadow-sm">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <p className="text-gray-700 font-medium">
-                  📍 Location detected
-                </p>
-              </div>
-            )}
+            <div className="mt-4 md:mt-0 flex flex-col space-y-2">
+              {location && (
+                <div className="flex items-center space-x-2 bg-white px-4 py-2 rounded-full shadow-sm">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  <p className="text-gray-700 font-medium">
+                    📍 Location detected
+                  </p>
+                </div>
+              )}
+              {locationError && (
+                <div className="flex items-center space-x-2 bg-orange-50 px-4 py-2 rounded-full border border-orange-200">
+                  <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                  <p className="text-orange-700 text-sm font-medium">
+                    {locationError}
+                  </p>
+                  <button
+                    onClick={requestLocationAndLoadShops}
+                    className="text-orange-600 hover:text-orange-800 text-sm underline ml-2"
+                  >
+                    Retry
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
 
           {loading ? (
@@ -226,7 +225,7 @@ export default function HomePage() {
                 No shops found in your area
               </h3>
               <p className="text-lg text-gray-600 mb-8 max-w-md mx-auto">
-                We're working to add more local businesses. Try adjusting your location or check back later.
+                We&apos;re working to add more local businesses. Try adjusting your location or check back later.
               </p>
               <button
                 onClick={() => window.location.reload()}
