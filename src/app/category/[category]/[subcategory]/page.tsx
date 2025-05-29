@@ -174,13 +174,22 @@ export default function SubcategoryPage() {
   const subcategory = params.subcategory as string;
   
   const [products, setProducts] = useState<Product[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [sortBy, setSortBy] = useState<'name' | 'price-low' | 'price-high' | 'brand'>('name');
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 200000]);
+  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
+  const [inStockOnly, setInStockOnly] = useState(false);
 
   useEffect(() => {
     if (category && subcategory) {
       loadProducts(category, subcategory);
     }
   }, [category, subcategory]);
+
+  useEffect(() => {
+    applyFilters();
+  }, [products, sortBy, priceRange, selectedBrands, inStockOnly]);
 
   const loadProducts = async (cat: string, subcat: string) => {
     setLoading(true);
@@ -193,6 +202,56 @@ export default function SubcategoryPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const applyFilters = () => {
+    let filtered = [...products];
+
+    // Filter by stock
+    if (inStockOnly) {
+      filtered = filtered.filter(product => product.inStock);
+    }
+
+    // Filter by price range
+    filtered = filtered.filter(product => 
+      product.price >= priceRange[0] && product.price <= priceRange[1]
+    );
+
+    // Filter by brands
+    if (selectedBrands.length > 0) {
+      filtered = filtered.filter(product => 
+        product.brand && selectedBrands.includes(product.brand)
+      );
+    }
+
+    // Sort products
+    filtered.sort((a, b) => {
+      switch (sortBy) {
+        case 'name':
+          return a.name.localeCompare(b.name);
+        case 'price-low':
+          return a.price - b.price;
+        case 'price-high':
+          return b.price - a.price;
+        case 'brand':
+          return (a.brand || '').localeCompare(b.brand || '');
+        default:
+          return 0;
+      }
+    });
+
+    setFilteredProducts(filtered);
+  };
+
+  const availableBrands = [...new Set(products.map(p => p.brand).filter(Boolean))] as string[];
+  const maxPrice = Math.max(...products.map(p => p.price), 200000);
+
+  const handleBrandToggle = (brand: string) => {
+    setSelectedBrands(prev => 
+      prev.includes(brand) 
+        ? prev.filter(b => b !== brand)
+        : [...prev, brand]
+    );
   };
 
   const info = subcategoryInfo[category]?.[subcategory];
@@ -255,40 +314,141 @@ export default function SubcategoryPage() {
 
       {/* Products */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex justify-between items-center mb-8">
-          <h2 className="text-2xl font-bold text-gray-900">Products</h2>
-          <p className="text-gray-600">
-            {products.length} product{products.length !== 1 ? 's' : ''} found
-          </p>
-        </div>
-
-        {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {[...Array(8)].map((_, i) => (
-              <div key={i} className="animate-pulse">
-                <div className="bg-gray-300 h-48 rounded-lg mb-4"></div>
-                <div className="h-4 bg-gray-300 rounded mb-2"></div>
-                <div className="h-4 bg-gray-300 rounded w-3/4"></div>
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          {/* Filters Sidebar */}
+          <div className="lg:col-span-1">
+            <div className="bg-white rounded-lg shadow-sm p-6 sticky top-24">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Filters</h3>
+              
+              {/* Sort By */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Sort By
+                </label>
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value as any)}
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                >
+                  <option value="name">Name (A-Z)</option>
+                  <option value="price-low">Price (Low to High)</option>
+                  <option value="price-high">Price (High to Low)</option>
+                  <option value="brand">Brand</option>
+                </select>
               </div>
-            ))}
+
+              {/* Price Range */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Price Range
+                </label>
+                <div className="space-y-2">
+                  <input
+                    type="range"
+                    min="0"
+                    max={maxPrice}
+                    value={priceRange[1]}
+                    onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
+                    className="w-full"
+                  />
+                  <div className="flex justify-between text-sm text-gray-600">
+                    <span>₹{priceRange[0].toLocaleString()}</span>
+                    <span>₹{priceRange[1].toLocaleString()}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Stock Filter */}
+              <div className="mb-6">
+                <label className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={inStockOnly}
+                    onChange={(e) => setInStockOnly(e.target.checked)}
+                    className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                  />
+                  <span className="ml-2 text-sm text-gray-700">In Stock Only</span>
+                </label>
+              </div>
+
+              {/* Brand Filter */}
+              {availableBrands.length > 0 && (
+                <div className="mb-6">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Brands
+                  </label>
+                  <div className="space-y-2 max-h-40 overflow-y-auto">
+                    {availableBrands.map((brand) => (
+                      <label key={brand} className="flex items-center">
+                        <input
+                          type="checkbox"
+                          checked={selectedBrands.includes(brand)}
+                          onChange={() => handleBrandToggle(brand)}
+                          className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                        />
+                        <span className="ml-2 text-sm text-gray-700">{brand}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Clear Filters */}
+              <button
+                onClick={() => {
+                  setSortBy('name');
+                  setPriceRange([0, maxPrice]);
+                  setSelectedBrands([]);
+                  setInStockOnly(false);
+                }}
+                className="w-full text-sm text-primary-600 hover:text-primary-700 font-medium"
+              >
+                Clear All Filters
+              </button>
+            </div>
           </div>
-        ) : products.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
+
+          {/* Products Grid */}
+          <div className="lg:col-span-3">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold text-gray-900">Products</h2>
+              <p className="text-gray-600">
+                {filteredProducts.length} of {products.length} product{products.length !== 1 ? 's' : ''}
+              </p>
+            </div>
+
+            {loading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[...Array(6)].map((_, i) => (
+                  <div key={i} className="animate-pulse">
+                    <div className="bg-gray-300 h-48 rounded-lg mb-4"></div>
+                    <div className="h-4 bg-gray-300 rounded mb-2"></div>
+                    <div className="h-4 bg-gray-300 rounded w-3/4"></div>
+                  </div>
+                ))}
+              </div>
+            ) : filteredProducts.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredProducts.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <div className="text-gray-400 text-6xl mb-4">📦</div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  No products found
+                </h3>
+                <p className="text-gray-600">
+                  {products.length === 0 
+                    ? "No products available in this subcategory at the moment."
+                    : "No products match your current filters. Try adjusting your search criteria."
+                  }
+                </p>
+              </div>
+            )}
           </div>
-        ) : (
-          <div className="text-center py-12">
-            <div className="text-gray-400 text-6xl mb-4">📦</div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">
-              No products found
-            </h3>
-            <p className="text-gray-600">
-              No products available in this subcategory at the moment.
-            </p>
-          </div>
-        )}
+        </div>
       </div>
     </div>
   );
