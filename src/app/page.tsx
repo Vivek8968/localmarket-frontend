@@ -137,56 +137,80 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-primary-600 to-primary-700 text-white py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="bg-gradient-to-br from-primary-600 via-primary-700 to-primary-800 text-white py-20 relative overflow-hidden">
+        <div className="absolute inset-0 bg-black/10"></div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-4xl md:text-6xl font-bold mb-4">
-              Find Local Shops Near You
+            <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+              Find Local Shops
+              <span className="block text-primary-200">Near You</span>
             </h1>
-            <p className="text-xl md:text-2xl mb-8 text-primary-100">
-              Discover electronics, batteries, and more from trusted local businesses
+            <p className="text-xl md:text-2xl mb-10 text-primary-100 max-w-3xl mx-auto leading-relaxed">
+              Discover electronics, batteries, and more from trusted local businesses. 
+              Connect directly with shop owners via WhatsApp.
             </p>
             <LocationSelector onLocationChange={handleLocationChange} />
           </div>
         </div>
+        {/* Decorative elements */}
+        <div className="absolute top-10 left-10 w-20 h-20 bg-white/10 rounded-full blur-xl"></div>
+        <div className="absolute bottom-10 right-10 w-32 h-32 bg-white/5 rounded-full blur-2xl"></div>
       </section>
 
       {/* Categories Section */}
-      <section className="py-16">
+      <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">
-            Shop by Category
-          </h2>
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+              Shop by Category
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Browse through our wide range of electronics and battery products from local stores
+            </p>
+          </div>
           <CategoryGrid />
         </div>
       </section>
 
       {/* Nearby Shops Section */}
-      <section className="py-16 bg-white">
+      <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-900">
-              Shops Near You
-            </h2>
-            {location && (
-              <p className="text-gray-600">
-                📍 Showing results for your location
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12">
+            <div>
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-2">
+                Shops Near You
+              </h2>
+              <p className="text-xl text-gray-600">
+                Discover trusted local businesses in your area
               </p>
+            </div>
+            {location && (
+              <div className="mt-4 md:mt-0 flex items-center space-x-2 bg-white px-4 py-2 rounded-full shadow-sm">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                <p className="text-gray-700 font-medium">
+                  📍 Location detected
+                </p>
+              </div>
             )}
           </div>
 
           {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
               {[...Array(8)].map((_, i) => (
-                <div key={i} className="animate-pulse">
-                  <div className="bg-gray-300 h-48 rounded-lg mb-4"></div>
-                  <div className="h-4 bg-gray-300 rounded mb-2"></div>
-                  <div className="h-4 bg-gray-300 rounded w-3/4"></div>
+                <div key={i} className="animate-pulse bg-white rounded-2xl p-6 shadow-sm">
+                  <div className="bg-gray-200 h-48 rounded-xl mb-4"></div>
+                  <div className="h-6 bg-gray-200 rounded-lg mb-3"></div>
+                  <div className="h-4 bg-gray-200 rounded-lg mb-2"></div>
+                  <div className="h-4 bg-gray-200 rounded-lg w-3/4 mb-4"></div>
+                  <div className="flex space-x-2">
+                    <div className="h-10 bg-gray-200 rounded-lg flex-1"></div>
+                    <div className="h-10 bg-gray-200 rounded-lg flex-1"></div>
+                  </div>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
               {shops.map((shop) => (
                 <ShopCard key={shop.id} shop={shop} />
               ))}
@@ -194,14 +218,22 @@ export default function HomePage() {
           )}
 
           {!loading && shops.length === 0 && (
-            <div className="text-center py-12">
-              <div className="text-gray-400 text-6xl mb-4">🏪</div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+            <div className="text-center py-20">
+              <div className="w-32 h-32 mx-auto mb-8 bg-gray-100 rounded-full flex items-center justify-center">
+                <div className="text-gray-400 text-6xl">🏪</div>
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">
                 No shops found in your area
               </h3>
-              <p className="text-gray-600">
-                Try adjusting your location or check back later
+              <p className="text-lg text-gray-600 mb-8 max-w-md mx-auto">
+                We're working to add more local businesses. Try adjusting your location or check back later.
               </p>
+              <button
+                onClick={() => window.location.reload()}
+                className="bg-primary-600 text-white px-8 py-3 rounded-xl font-semibold hover:bg-primary-700 transition-colors duration-200"
+              >
+                Refresh
+              </button>
             </div>
           )}
         </div>

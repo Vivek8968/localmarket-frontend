@@ -21,74 +21,82 @@ const ProductCard = ({ product }: ProductCardProps) => {
   };
 
   return (
-    <Link href={`/product/${product.id}`} className="block">
-      <div className="card overflow-hidden hover:scale-105 transition-transform duration-300 cursor-pointer">
+    <Link href={`/product/${product.id}`} className="block group">
+      <div className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 group-hover:border-primary-200">
       {/* Product Image */}
-      <div className="relative h-48 bg-gray-200">
+      <div className="relative h-52 bg-gradient-to-br from-gray-100 to-gray-200">
         {product.image ? (
           <LazyImage
             src={product.image}
             alt={product.name}
             fill
-            className="object-cover"
+            className="object-cover group-hover:scale-105 transition-transform duration-300"
           />
         ) : (
           <div className="flex items-center justify-center h-full text-gray-400">
-            <svg className="w-16 h-16" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
-            </svg>
+            <div className="text-center">
+              <svg className="w-16 h-16 mx-auto mb-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
+              </svg>
+              <p className="text-sm font-medium">Product Image</p>
+            </div>
           </div>
         )}
         
         {/* Stock Status */}
-        <div className="absolute top-3 right-3">
-          <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+        <div className="absolute top-4 right-4">
+          <span className={`px-3 py-1 text-xs font-semibold rounded-full backdrop-blur-sm ${
             product.inStock 
-              ? 'bg-green-100 text-green-800' 
-              : 'bg-red-100 text-red-800'
+              ? 'bg-green-500/90 text-white' 
+              : 'bg-red-500/90 text-white'
           }`}>
-            {product.inStock ? 'In Stock' : 'Out of Stock'}
+            {product.inStock ? '● In Stock' : '● Out of Stock'}
           </span>
         </div>
       </div>
 
       {/* Product Info */}
-      <div className="p-4">
+      <div className="p-6">
         {/* Brand */}
         {product.brand && (
-          <p className="text-sm text-gray-500 mb-1">{product.brand}</p>
+          <p className="text-sm text-primary-600 font-semibold mb-2">{product.brand}</p>
         )}
         
         {/* Product Name */}
-        <h3 className="font-semibold text-lg text-gray-900 mb-2 line-clamp-2">
+        <h3 className="font-bold text-xl text-gray-900 mb-3 line-clamp-2 group-hover:text-primary-600 transition-colors duration-200">
           {product.name}
         </h3>
         
         {/* Description */}
-        <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+        <p className="text-gray-600 text-sm mb-4 line-clamp-2 leading-relaxed">
           {product.description}
         </p>
 
         {/* Price */}
         <div className="mb-4">
-          <span className="text-2xl font-bold text-primary-600">
+          <span className="text-3xl font-bold text-primary-600">
             ₹{product.price.toLocaleString()}
           </span>
         </div>
 
-        {/* Category */}
-        <div className="mb-4">
-          <span className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">
+        {/* Category and Shop Info */}
+        <div className="flex items-center justify-between mb-6">
+          <span className="px-3 py-1 bg-primary-50 text-primary-700 text-xs font-medium rounded-full border border-primary-100">
             {product.subcategory || product.category}
           </span>
+          {product.shop && (
+            <span className="text-xs text-gray-500 line-clamp-1">
+              at {product.shop.name}
+            </span>
+          )}
         </div>
 
         {/* Action Buttons */}
-        <div className="space-y-2">
+        <div className="space-y-3">
           <button
             onClick={handleWhatsAppInquiry}
             disabled={!product.inStock}
-            className={`w-full font-medium py-2 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2 ${
+            className={`w-full font-semibold py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center space-x-2 shadow-sm hover:shadow-md ${
               product.inStock
                 ? 'bg-green-600 hover:bg-green-700 text-white'
                 : 'bg-gray-300 text-gray-500 cursor-not-allowed'
@@ -101,7 +109,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
           </button>
           
           <div className="text-center">
-            <span className="text-xs text-gray-500">Click card for details</span>
+            <span className="text-xs text-gray-500">Click card for more details</span>
           </div>
         </div>
       </div>

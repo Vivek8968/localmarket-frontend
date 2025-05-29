@@ -20,17 +20,16 @@ const Header = () => {
       name: 'Electronics',
       icon: '📱',
       subcategories: [
-        { id: 'mobile-phones', name: 'Mobile Phones' },
-        { id: 'laptops', name: 'Laptops' },
+        { id: 'tv', name: 'TV' },
+        { id: 'ac', name: 'AC' },
+        { id: 'cooler', name: 'Cooler' },
+        { id: 'mobile', name: 'Mobile' },
+        { id: 'laptop', name: 'Laptop' },
+        { id: 'printer', name: 'Printer' },
         { id: 'accessories', name: 'Accessories' },
-        { id: 'televisions', name: 'Televisions' },
-        { id: 'refrigerators', name: 'Refrigerators' },
-        { id: 'air-conditioners', name: 'Air Conditioners' },
-        { id: 'washing-machines', name: 'Washing Machines' },
-        { id: 'printers', name: 'Printers' },
-        { id: 'ovens', name: 'Ovens' },
-        { id: 'coolers', name: 'Coolers' },
-        { id: 'fans', name: 'Fans' },
+        { id: 'fridge', name: 'Fridge' },
+        { id: 'oven', name: 'Oven' },
+        { id: 'fan', name: 'Fan' },
       ]
     },
     {
@@ -38,25 +37,27 @@ const Header = () => {
       name: 'Batteries',
       icon: '🔋',
       subcategories: [
-        { id: 'two-wheeler-batteries', name: 'Two-Wheeler Batteries' },
-        { id: 'inverter-batteries', name: 'Inverter Batteries' },
-        { id: 'car-batteries', name: 'Car Batteries' },
-        { id: 'battery-chargers', name: 'Battery Chargers' },
         { id: 'ev-batteries', name: 'EV Batteries' },
+        { id: 'ups-batteries', name: 'UPS Batteries' },
+        { id: 'inverter-batteries', name: 'Inverter Batteries' },
+        { id: 'scooter-batteries', name: 'Scooter Batteries' },
+        { id: 'battery-accessories', name: 'Battery Accessories' },
       ]
     }
   ];
 
   return (
-    <header className="bg-white shadow-md sticky top-0 z-50">
+    <header className="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">L</span>
+          <Link href="/" className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-gradient-to-r from-primary-600 to-primary-700 rounded-xl flex items-center justify-center shadow-lg">
+              <span className="text-white font-bold text-xl">L</span>
             </div>
-            <span className="text-xl font-bold text-gray-900">LocalMarket</span>
+            <span className="text-2xl font-bold bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent">
+              LocalMarket
+            </span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -67,7 +68,7 @@ const Header = () => {
           </nav>
 
           {/* Search Bar */}
-          <div className="flex-1 max-w-lg mx-8">
+          <div className="flex-1 max-w-2xl mx-8">
             <SearchBar />
           </div>
 
