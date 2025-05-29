@@ -2,6 +2,8 @@
 
 import React, { useState, useRef } from 'react';
 import { api } from '@/lib/api';
+import { storage } from '@/lib/firebase';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 interface ImageUploadProps {
   onImageUploaded: (url: string) => void;
@@ -21,6 +23,16 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const uploadToFirebase = async (file: File): Promise<string> => {
+    const timestamp = Date.now();
+    const fileName = `${type}s/${timestamp}_${file.name}`;
+    const storageRef = ref(storage, fileName);
+    
+    const snapshot = await uploadBytes(storageRef, file);
+    const downloadURL = await getDownloadURL(snapshot.ref);
+    return downloadURL;
+  };
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -42,12 +54,23 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     setError('');
 
     try {
-      const response = await api.uploadImage(file, type);
-      if (response.data?.url) {
-        onImageUploaded(response.data.url);
-      } else {
-        setError('Failed to upload image');
+      // Try backend upload first
+      let imageUrl: string;
+      
+      try {
+        const response = await api.uploadImage(file, type);
+        if (response.data?.url) {
+          imageUrl = response.data.url;
+        } else {
+          throw new Error('Backend upload failed');
+        }
+      } catch (backendError) {
+        console.log('Backend upload failed, trying Firebase Storage...');
+        // Fallback to Firebase Storage
+        imageUrl = await uploadToFirebase(file);
       }
+
+      onImageUploaded(imageUrl);
     } catch (error: any) {
       console.error('Error uploading image:', error);
       setError('Failed to upload image. Please try again.');

@@ -116,8 +116,8 @@ const Header = () => {
                 
                 {user.role === 'admin' && (
                   <Link
-                    href="/admin"
-                    className="text-sm bg-purple-600 text-white px-3 py-1 rounded-md hover:bg-purple-700"
+                    href="/admin-dashboard"
+                    className="text-sm bg-red-600 text-white px-3 py-1 rounded-md hover:bg-red-700"
                   >
                     Admin
                   </Link>
