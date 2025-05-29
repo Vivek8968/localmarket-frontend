@@ -87,14 +87,41 @@ const Header = () => {
                   ) : (
                     <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
                       <span className="text-white text-sm font-medium">
-                        {user.displayName?.charAt(0) || user.email?.charAt(0) || '?'}
+                        {user.name?.charAt(0) || user.email?.charAt(0) || '?'}
                       </span>
                     </div>
                   )}
-                  <span className="text-sm font-medium text-gray-700">
-                    Welcome, {user.displayName || user.email || 'User'}
-                  </span>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium text-gray-700">
+                      Welcome, {user.name || user.email || 'User'}
+                    </span>
+                    {user.role && (
+                      <span className="text-xs text-gray-500 capitalize">
+                        {user.role}
+                      </span>
+                    )}
+                  </div>
                 </div>
+                
+                {/* Role-based Navigation */}
+                {user.role === 'seller' && (
+                  <Link
+                    href="/seller-dashboard"
+                    className="text-sm bg-green-600 text-white px-3 py-1 rounded-md hover:bg-green-700"
+                  >
+                    Dashboard
+                  </Link>
+                )}
+                
+                {user.role === 'admin' && (
+                  <Link
+                    href="/admin"
+                    className="text-sm bg-purple-600 text-white px-3 py-1 rounded-md hover:bg-purple-700"
+                  >
+                    Admin
+                  </Link>
+                )}
+                
                 <button
                   onClick={logout}
                   className="text-sm text-red-600 hover:text-red-800"
@@ -145,19 +172,46 @@ const Header = () => {
                       ) : (
                         <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
                           <span className="text-white font-medium">
-                            {user.displayName?.charAt(0) || user.email?.charAt(0) || '?'}
+                            {user.name?.charAt(0) || user.email?.charAt(0) || '?'}
                           </span>
                         </div>
                       )}
                       <div>
                         <p className="font-medium text-gray-900">
-                          {user.displayName || user.email || 'User'}
+                          {user.name || user.email || 'User'}
                         </p>
                         <p className="text-sm text-gray-500">
-                          {user.email || user.phoneNumber}
+                          {user.email || user.phone}
                         </p>
+                        {user.role && (
+                          <p className="text-xs text-blue-600 capitalize">
+                            {user.role}
+                          </p>
+                        )}
                       </div>
                     </div>
+                    
+                    {/* Role-based Mobile Navigation */}
+                    {user.role === 'seller' && (
+                      <Link
+                        href="/seller-dashboard"
+                        className="block w-full bg-green-600 text-white text-center py-2 px-4 rounded-md hover:bg-green-700"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        Seller Dashboard
+                      </Link>
+                    )}
+                    
+                    {user.role === 'admin' && (
+                      <Link
+                        href="/admin"
+                        className="block w-full bg-purple-600 text-white text-center py-2 px-4 rounded-md hover:bg-purple-700"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        Admin Panel
+                      </Link>
+                    )}
+                    
                     <button
                       onClick={logout}
                       className="w-full text-left text-red-600 hover:text-red-800"

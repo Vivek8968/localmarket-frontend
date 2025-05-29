@@ -1,8 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PhoneAuth from './PhoneAuth';
 import GoogleAuth from './GoogleAuth';
+import RoleSelector from './RoleSelector';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -10,10 +12,23 @@ interface AuthModalProps {
   onSuccess: () => void;
 }
 
-type AuthMethod = 'select' | 'phone' | 'google';
+type AuthMethod = 'select' | 'phone' | 'google' | 'role-select';
 
 const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => {
   const [authMethod, setAuthMethod] = useState<AuthMethod>('select');
+  const [pendingFirebaseUser, setPendingFirebaseUser] = useState<any>(null);
+  const { firebaseUser, user } = useAuth();
+
+  useEffect(() => {
+    // Check if user needs to complete registration
+    if (firebaseUser && !user && isOpen) {
+      const pendingUserInfo = localStorage.getItem('pendingUserInfo');
+      if (pendingUserInfo) {
+        setPendingFirebaseUser(firebaseUser);
+        setAuthMethod('role-select');
+      }
+    }
+  }, [firebaseUser, user, isOpen]);
 
   const handleSuccess = () => {
     setAuthMethod('select');
@@ -93,6 +108,14 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
 
         {authMethod === 'google' && (
           <GoogleAuth onSuccess={handleSuccess} onClose={goBack} />
+        )}
+
+        {authMethod === 'role-select' && pendingFirebaseUser && (
+          <RoleSelector
+            firebaseUser={pendingFirebaseUser}
+            onComplete={handleSuccess}
+            onClose={handleClose}
+          />
         )}
       </div>
     </div>

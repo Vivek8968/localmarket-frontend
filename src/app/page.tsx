@@ -94,11 +94,36 @@ export default function HomePage() {
   const loadShops = async (userLocation: Location) => {
     setLoading(true);
     try {
-      // For now, use mock data
-      // In production, this would call: api.getShops(userLocation)
-      setShops(mockShops);
+      // Try to load from backend API
+      const { api } = await import('@/lib/api');
+      const response = await api.getShops(userLocation);
+      
+      if (response.data && Array.isArray(response.data)) {
+        // Transform backend data to frontend format
+        const transformedShops = response.data.map((shop: any) => ({
+          id: shop.id.toString(),
+          name: shop.name,
+          address: shop.address || 'Address not provided',
+          phone: shop.whatsapp_number || '',
+          whatsapp: shop.whatsapp_number || '',
+          location: { 
+            latitude: shop.latitude || 0, 
+            longitude: shop.longitude || 0 
+          },
+          categories: ['general'], // TODO: Add categories from backend
+          rating: 4.0, // TODO: Add ratings from backend
+          isOpen: true, // TODO: Add business hours from backend
+          image: shop.image_url || 'https://via.placeholder.com/300x200?text=' + encodeURIComponent(shop.name)
+        }));
+        setShops(transformedShops);
+      } else {
+        // Fallback to mock data if backend fails
+        setShops(mockShops);
+      }
     } catch (error) {
-      console.error('Error loading shops:', error);
+      console.error('Error loading shops from backend, using mock data:', error);
+      // Fallback to mock data
+      setShops(mockShops);
     } finally {
       setLoading(false);
     }

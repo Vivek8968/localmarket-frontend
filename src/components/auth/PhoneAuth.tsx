@@ -64,7 +64,22 @@ const PhoneAuth: React.FC<PhoneAuthProps> = ({ onSuccess, onClose }) => {
     setError('');
 
     try {
-      await confirmationResult.confirm(otp);
+      const result = await confirmationResult.confirm(otp);
+      
+      // After successful Firebase authentication, sync with backend
+      if (result.user) {
+        try {
+          const firebaseToken = await result.user.getIdToken();
+          const { api } = await import('@/lib/api');
+          
+          // Try to login/register with backend
+          await api.login(firebaseToken, result.user.phoneNumber || phoneNumber);
+        } catch (backendError) {
+          console.error('Backend sync error:', backendError);
+          // Continue even if backend sync fails - user is authenticated with Firebase
+        }
+      }
+      
       onSuccess();
     } catch (error: any) {
       console.error('Error verifying OTP:', error);
