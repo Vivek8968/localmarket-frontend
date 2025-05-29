@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import ShopCard from '@/components/ShopCard';
 import LocationSelector from '@/components/LocationSelector';
-import CategoryGrid from '@/components/CategoryGrid';
+import CategoryGridNew from '@/components/CategoryGridNew';
 import { Shop, Location } from '@/types';
 
 export default function HomePage() {
@@ -151,7 +151,7 @@ export default function HomePage() {
               Browse through our wide range of electronics and battery products from local stores
             </p>
           </div>
-          <CategoryGrid />
+          <CategoryGridNew />
         </div>
       </section>
 

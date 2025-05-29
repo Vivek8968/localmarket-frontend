@@ -9,14 +9,14 @@ import { Product } from '@/types';
 // Mock data - same as category page but filtered by subcategory
 const mockProducts: { [key: string]: { [key: string]: Product[] } } = {
   electronics: {
-    'mobile-phones': [
+    'mobiles': [
       {
         id: 'p1',
         name: 'iPhone 15 Pro',
         description: 'Latest iPhone with A17 Pro chip',
         price: 134900,
         category: 'electronics',
-        subcategory: 'mobile-phones',
+        subcategory: 'mobiles',
         shopId: '1',
         inStock: true,
         brand: 'Apple',
@@ -39,7 +39,7 @@ const mockProducts: { [key: string]: { [key: string]: Product[] } } = {
         description: 'Flagship Android smartphone',
         price: 79999,
         category: 'electronics',
-        subcategory: 'mobile-phones',
+        subcategory: 'mobiles',
         shopId: '1',
         inStock: true,
         brand: 'Samsung',
@@ -80,18 +80,66 @@ const mockProducts: { [key: string]: { [key: string]: Product[] } } = {
           rating: 4.5,
           isOpen: true
         }
+      },
+      {
+        id: 'p6',
+        name: 'Dell XPS 13',
+        description: 'Premium ultrabook with Intel Core i7',
+        price: 89999,
+        category: 'electronics',
+        subcategory: 'laptops',
+        shopId: '1',
+        inStock: true,
+        brand: 'Dell',
+        image: 'https://via.placeholder.com/300x300?text=Dell+XPS+13',
+        shop: {
+          id: '1',
+          name: 'TechWorld Electronics',
+          address: 'Shop 12, Main Market, Sector 15',
+          phone: '+91 98765 43210',
+          whatsapp: '+91 98765 43210',
+          location: { latitude: 28.5355, longitude: 77.3910 },
+          categories: ['electronics'],
+          rating: 4.5,
+          isOpen: true
+        }
+      }
+    ],
+    'televisions': [
+      {
+        id: 'p7',
+        name: 'Samsung 55" 4K Smart TV',
+        description: 'Crystal UHD 4K Smart TV with Tizen OS',
+        price: 54999,
+        category: 'electronics',
+        subcategory: 'televisions',
+        shopId: '1',
+        inStock: true,
+        brand: 'Samsung',
+        image: 'https://via.placeholder.com/300x300?text=Samsung+TV',
+        shop: {
+          id: '1',
+          name: 'TechWorld Electronics',
+          address: 'Shop 12, Main Market, Sector 15',
+          phone: '+91 98765 43210',
+          whatsapp: '+91 98765 43210',
+          location: { latitude: 28.5355, longitude: 77.3910 },
+          categories: ['electronics'],
+          rating: 4.5,
+          isOpen: true
+        }
       }
     ]
   },
   batteries: {
-    'car-batteries': [
+    'four-wheeler-batteries': [
       {
         id: 'p4',
         name: 'Exide Car Battery',
         description: '12V 65Ah maintenance-free battery',
         price: 8500,
         category: 'batteries',
-        subcategory: 'car-batteries',
+        subcategory: 'four-wheeler-batteries',
         shopId: '2',
         inStock: true,
         brand: 'Exide',
@@ -133,14 +181,64 @@ const mockProducts: { [key: string]: { [key: string]: Product[] } } = {
           isOpen: true
         }
       }
+    ],
+    'inverter-batteries': [
+      {
+        id: 'p8',
+        name: 'Luminous Inverter Battery',
+        description: '150Ah tubular battery for home backup',
+        price: 12500,
+        category: 'batteries',
+        subcategory: 'inverter-batteries',
+        shopId: '2',
+        inStock: true,
+        brand: 'Luminous',
+        image: 'https://via.placeholder.com/300x300?text=Inverter+Battery',
+        shop: {
+          id: '2',
+          name: 'Battery Hub',
+          address: 'Plot 45, Industrial Area, Phase 2',
+          phone: '+91 98765 43211',
+          whatsapp: '+91 98765 43211',
+          location: { latitude: 28.5365, longitude: 77.3920 },
+          categories: ['batteries'],
+          rating: 4.3,
+          isOpen: true
+        }
+      }
+    ],
+    'lithium-batteries': [
+      {
+        id: 'p9',
+        name: 'Tesla Lithium Battery Pack',
+        description: 'High-performance lithium-ion battery',
+        price: 25000,
+        category: 'batteries',
+        subcategory: 'lithium-batteries',
+        shopId: '2',
+        inStock: false,
+        brand: 'Tesla',
+        image: 'https://via.placeholder.com/300x300?text=Lithium+Battery',
+        shop: {
+          id: '2',
+          name: 'Battery Hub',
+          address: 'Plot 45, Industrial Area, Phase 2',
+          phone: '+91 98765 43211',
+          whatsapp: '+91 98765 43211',
+          location: { latitude: 28.5365, longitude: 77.3920 },
+          categories: ['batteries'],
+          rating: 4.3,
+          isOpen: true
+        }
+      }
     ]
   }
 };
 
 const subcategoryInfo: { [key: string]: { [key: string]: { name: string; description: string } } } = {
   electronics: {
-    'mobile-phones': {
-      name: 'Mobile Phones',
+    'mobiles': {
+      name: 'Mobiles',
       description: 'Latest smartphones from top brands'
     },
     'laptops': {
@@ -150,20 +248,52 @@ const subcategoryInfo: { [key: string]: { [key: string]: { name: string; descrip
     'televisions': {
       name: 'Televisions',
       description: 'Smart TVs and entertainment systems'
+    },
+    'fridges': {
+      name: 'Fridges',
+      description: 'Refrigerators and cooling appliances'
+    },
+    'ovens': {
+      name: 'Ovens',
+      description: 'Microwave ovens and cooking appliances'
+    },
+    'printers': {
+      name: 'Printers',
+      description: 'Inkjet and laser printers for home and office'
+    },
+    'fans': {
+      name: 'Fans',
+      description: 'Ceiling fans and cooling solutions'
+    },
+    'acs': {
+      name: 'ACs',
+      description: 'Air conditioners and cooling systems'
+    },
+    'coolers': {
+      name: 'Coolers',
+      description: 'Air coolers and desert coolers'
+    },
+    'accessories': {
+      name: 'Accessories',
+      description: 'Electronic accessories and peripherals'
     }
   },
   batteries: {
-    'car-batteries': {
-      name: 'Car Batteries',
-      description: 'Reliable automotive batteries for all car models'
-    },
     'two-wheeler-batteries': {
-      name: 'Two-Wheeler Batteries',
+      name: 'Two Wheeler Batteries',
       description: 'Motorcycle and scooter batteries'
+    },
+    'four-wheeler-batteries': {
+      name: 'Four Wheeler Batteries',
+      description: 'Car and automotive batteries'
     },
     'inverter-batteries': {
       name: 'Inverter Batteries',
       description: 'Home and office backup power solutions'
+    },
+    'lithium-batteries': {
+      name: 'Lithium Batteries',
+      description: 'High-performance lithium-ion batteries'
     }
   }
 };

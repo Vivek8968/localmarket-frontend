@@ -27,7 +27,8 @@ const categories = [
   }
 ];
 
-const CategoryGrid = () => {
+const CategoryGridNew = () => {
+  console.log('CategoryGridNew rendering with categories:', categories);
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
       {categories.map((category) => (
@@ -89,4 +90,4 @@ const CategoryGrid = () => {
   );
 };
 
-export default CategoryGrid;
+export default CategoryGridNew;

@@ -22,12 +22,12 @@ const categoryInfo: { [key: string]: { name: string; icon: string; description: 
 
 const subcategories: { [key: string]: string[] } = {
   electronics: [
-    'tv', 'ac', 'cooler', 'mobile', 'laptop', 'printer', 
-    'accessories', 'fridge', 'oven', 'fan'
+    'mobiles', 'laptops', 'televisions', 'fridges', 'ovens', 
+    'printers', 'fans', 'acs', 'coolers', 'accessories'
   ],
   batteries: [
-    'ev-batteries', 'ups-batteries', 'inverter-batteries', 
-    'scooter-batteries', 'battery-accessories'
+    'two-wheeler-batteries', 'four-wheeler-batteries', 
+    'inverter-batteries', 'lithium-batteries'
   ]
 };
 

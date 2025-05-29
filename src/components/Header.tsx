@@ -20,16 +20,16 @@ const Header = () => {
       name: 'Electronics',
       icon: '📱',
       subcategories: [
-        { id: 'tv', name: 'TV' },
-        { id: 'ac', name: 'AC' },
-        { id: 'cooler', name: 'Cooler' },
-        { id: 'mobile', name: 'Mobile' },
-        { id: 'laptop', name: 'Laptop' },
-        { id: 'printer', name: 'Printer' },
+        { id: 'mobiles', name: 'Mobiles' },
+        { id: 'laptops', name: 'Laptops' },
+        { id: 'televisions', name: 'Televisions' },
+        { id: 'fridges', name: 'Fridges' },
+        { id: 'ovens', name: 'Ovens' },
+        { id: 'printers', name: 'Printers' },
+        { id: 'fans', name: 'Fans' },
+        { id: 'acs', name: 'ACs' },
+        { id: 'coolers', name: 'Coolers' },
         { id: 'accessories', name: 'Accessories' },
-        { id: 'fridge', name: 'Fridge' },
-        { id: 'oven', name: 'Oven' },
-        { id: 'fan', name: 'Fan' },
       ]
     },
     {
@@ -37,11 +37,10 @@ const Header = () => {
       name: 'Batteries',
       icon: '🔋',
       subcategories: [
-        { id: 'ev-batteries', name: 'EV Batteries' },
-        { id: 'ups-batteries', name: 'UPS Batteries' },
+        { id: 'two-wheeler-batteries', name: 'Two Wheeler Batteries' },
+        { id: 'four-wheeler-batteries', name: 'Four Wheeler Batteries' },
         { id: 'inverter-batteries', name: 'Inverter Batteries' },
-        { id: 'scooter-batteries', name: 'Scooter Batteries' },
-        { id: 'battery-accessories', name: 'Battery Accessories' },
+        { id: 'lithium-batteries', name: 'Lithium Batteries' },
       ]
     }
   ];
