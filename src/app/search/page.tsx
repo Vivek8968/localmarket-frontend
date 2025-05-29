@@ -113,7 +113,17 @@ function SearchContent() {
       }
     } catch (error) {
       console.error('Error performing search:', error);
-      setSearchResults({ shops: [], products: [] });
+      // Fallback to mock data when backend is not available
+      console.log('Loading mock search results as fallback...');
+      const { searchProducts, searchShops } = await import('@/lib/mockData');
+      
+      const mockProducts = searchProducts(searchQuery);
+      const mockShops = searchShops(searchQuery);
+      
+      setSearchResults({
+        products: mockProducts,
+        shops: mockShops
+      });
     } finally {
       setLoading(false);
     }

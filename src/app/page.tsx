@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import ShopCard from '@/components/ShopCard';
-import LocationSelector from '@/components/LocationSelector';
 import CategoryGridNew from '@/components/CategoryGridNew';
 import { Shop, Location } from '@/types';
 
@@ -19,51 +18,11 @@ export default function HomePage() {
   const requestLocationAndLoadShops = () => {
     setLocationError(null);
     
-    if (!navigator.geolocation) {
-      setLocationError('Geolocation is not supported by this browser');
-      const defaultLocation = { latitude: 28.5355, longitude: 77.3910 };
-      setLocation(defaultLocation);
-      loadShops(defaultLocation);
-      return;
-    }
-
-    setLoading(true);
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const userLocation = {
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude
-        };
-        setLocation(userLocation);
-        loadShops(userLocation);
-      },
-      (error) => {
-        console.error('Geolocation error:', error);
-        let errorMessage = 'Unable to get your location';
-        
-        switch (error.code) {
-          case error.PERMISSION_DENIED:
-            errorMessage = 'Location access denied. Please enable location services.';
-            break;
-          case error.POSITION_UNAVAILABLE:
-            errorMessage = 'Location information unavailable.';
-            break;
-          case error.TIMEOUT:
-            errorMessage = 'Location request timed out.';
-            break;
-        }
-        
-        setLocationError(errorMessage);
-        const defaultLocation = { latitude: 28.5355, longitude: 77.3910 };
-        setLocation(defaultLocation);
-        loadShops(defaultLocation);
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 300000 // 5 minutes
-      }
-    );
+    // Use default location for now to avoid geolocation issues
+    setLocationError('Using default location');
+    const defaultLocation = { latitude: 28.5355, longitude: 77.3910 };
+    setLocation(defaultLocation);
+    loadShops(defaultLocation);
   };
 
 
@@ -106,16 +65,45 @@ export default function HomePage() {
       }
     } catch (error) {
       console.error('Error loading shops from backend:', error);
-      setShops([]);
+      // Fallback to mock data when backend is not available
+      console.log('Loading mock data as fallback...');
+      const { mockShops } = await import('@/lib/mockData');
+      
+      // Calculate distances from user location
+      const shopsWithDistance = mockShops.map(shop => ({
+        ...shop,
+        distance: calculateDistance(
+          userLocation.latitude,
+          userLocation.longitude,
+          shop.location.latitude,
+          shop.location.longitude
+        )
+      }));
+      
+      // Sort by distance
+      shopsWithDistance.sort((a, b) => a.distance - b.distance);
+      
+      setShops(shopsWithDistance);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleLocationChange = (newLocation: Location) => {
-    setLocation(newLocation);
-    loadShops(newLocation);
+  // Helper function to calculate distance between two coordinates
+  const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
+    const R = 6371; // Radius of the Earth in kilometers
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = 
+      Math.sin(dLat/2) * Math.sin(dLat/2) +
+      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+      Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    const distance = R * c; // Distance in kilometers
+    return Math.round(distance * 10) / 10; // Round to 1 decimal place
   };
+
+
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -132,7 +120,12 @@ export default function HomePage() {
               Discover electronics, batteries, and more from trusted local businesses. 
               Connect directly with shop owners via WhatsApp.
             </p>
-            <LocationSelector onLocationChange={handleLocationChange} />
+            {/* <LocationSelector onLocationChange={handleLocationChange} /> */}
+            <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4">
+              <div className="bg-white text-primary-600 font-semibold py-3 px-6 rounded-lg">
+                📍 Using default location (Delhi)
+              </div>
+            </div>
           </div>
         </div>
         {/* Decorative elements */}

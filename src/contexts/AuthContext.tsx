@@ -56,6 +56,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setFirebaseUser(firebaseUser);
       
       if (firebaseUser) {
+        // Check if we're in development mode with mock data
+        const isDevelopment = process.env.NODE_ENV === 'development';
+        const hasBackendUrl = process.env.NEXT_PUBLIC_API_URL && process.env.NEXT_PUBLIC_API_URL !== 'https://your-backend-url.com/api';
+        
+        if (isDevelopment && !hasBackendUrl) {
+          // In development without backend, create a mock user
+          const mockUser = {
+            id: 1,
+            firebase_uid: firebaseUser.uid,
+            name: firebaseUser.displayName || 'Mock User',
+            email: firebaseUser.email || undefined,
+            phone: firebaseUser.phoneNumber || undefined,
+            role: 'customer' as const,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          };
+          setUser(mockUser);
+          localStorage.setItem('userInfo', JSON.stringify(mockUser));
+          setLoading(false);
+          return;
+        }
+        
         try {
           // Get Firebase ID token and sync with backend
           const firebaseToken = await firebaseUser.getIdToken();
@@ -110,6 +132,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const login = async (firebaseUser: FirebaseUser) => {
+    // Check if we're in development mode with mock data
+    const isDevelopment = process.env.NODE_ENV === 'development';
+    const hasBackendUrl = process.env.NEXT_PUBLIC_API_URL && process.env.NEXT_PUBLIC_API_URL !== 'https://your-backend-url.com/api';
+    
+    if (isDevelopment && !hasBackendUrl) {
+      // In development without backend, create a mock user
+      const mockUser = {
+        id: 1,
+        firebase_uid: firebaseUser.uid,
+        name: firebaseUser.displayName || 'Mock User',
+        email: firebaseUser.email || undefined,
+        phone: firebaseUser.phoneNumber || undefined,
+        role: 'customer' as const,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      setUser(mockUser);
+      localStorage.setItem('userInfo', JSON.stringify(mockUser));
+      return;
+    }
+    
     try {
       const firebaseToken = await firebaseUser.getIdToken();
       const response = await api.login(firebaseToken, firebaseUser.phoneNumber || '');
@@ -141,6 +184,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const updateUserProfile = async (data: Partial<BackendUser>) => {
+    // Check if we're in development mode with mock data
+    const isDevelopment = process.env.NODE_ENV === 'development';
+    const hasBackendUrl = process.env.NEXT_PUBLIC_API_URL && process.env.NEXT_PUBLIC_API_URL !== 'https://your-backend-url.com/api';
+    
+    if (isDevelopment && !hasBackendUrl) {
+      // In development without backend, update the mock user
+      if (user) {
+        const updatedUser = { ...user, ...data };
+        setUser(updatedUser);
+        localStorage.setItem('userInfo', JSON.stringify(updatedUser));
+      }
+      return;
+    }
+    
     try {
       const response = await api.updateProfile(data);
       if (response.status && response.data) {

@@ -115,12 +115,54 @@ export default function ProductDetailPage() {
     const fetchProductData = async () => {
       setLoading(true);
       try {
-        // In production: const data = await api.getProductWithShops(productId);
-        const data = mockProductData[productId];
-        setProductData(data || null);
+        // Try to get data from API first
+        const { api } = await import('@/lib/api');
+        const productResponse = await api.getProductById(productId);
+        
+        if (productResponse && productResponse.data) {
+          // Transform API data
+          const product = productResponse.data;
+          const transformedProduct = {
+            id: product.id.toString(),
+            name: product.name || 'Unnamed Product',
+            description: product.description || '',
+            price: parseFloat(product.price) || 0,
+            category: product.category || '',
+            subcategory: product.subcategory || product.category,
+            shopId: product.shop_id?.toString() || '',
+            inStock: product.in_stock !== undefined ? product.in_stock : true,
+            brand: product.brand || '',
+            image: product.image_url || `https://via.placeholder.com/600x600?text=${encodeURIComponent(product.name || 'Product')}`
+          };
+          
+          // Get shops selling this product (mock for now)
+          const shops = mockProductData[productId]?.shops || [];
+          
+          setProductData({ product: transformedProduct, shops });
+        } else {
+          throw new Error('No product data received');
+        }
       } catch (error) {
-        console.error('Error fetching product data:', error);
-        setProductData(null);
+        console.error('Error fetching product data from API:', error);
+        // Fallback to mock data
+        const { getProductById, mockShops } = await import('@/lib/mockData');
+        const mockProduct = getProductById(productId);
+        
+        if (mockProduct) {
+          // Find shops that sell this product
+          const shopsSellingProduct = mockShops.filter(shop => 
+            shop.categories.some(category => 
+              category.toLowerCase() === mockProduct.category.toLowerCase()
+            )
+          );
+          
+          setProductData({ 
+            product: mockProduct, 
+            shops: shopsSellingProduct.slice(0, 3) // Limit to 3 shops for demo
+          });
+        } else {
+          setProductData(null);
+        }
       } finally {
         setLoading(false);
       }

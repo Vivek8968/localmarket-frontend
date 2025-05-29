@@ -8,27 +8,69 @@ import ShopCard from '@/components/ShopCard';
 import { Product, Shop } from '@/types';
 
 const categoryInfo: { [key: string]: { name: string; icon: string; description: string } } = {
-  electronics: {
-    name: 'Electronics',
+  mobiles: {
+    name: 'Mobiles',
     icon: '📱',
-    description: 'Find the latest smartphones, laptops, TVs, and electronic appliances from local stores'
+    description: 'Find the latest smartphones, feature phones, and mobile accessories from local stores'
   },
-  batteries: {
-    name: 'Batteries',
-    icon: '🔋',
-    description: 'Car batteries, bike batteries, inverter batteries, and more from trusted dealers'
+  laptops: {
+    name: 'Laptops',
+    icon: '💻',
+    description: 'Gaming laptops, business laptops, ultrabooks, and laptop accessories'
+  },
+  tvs: {
+    name: 'TVs',
+    icon: '📺',
+    description: 'Smart TVs, LED TVs, OLED displays, and TV accessories from trusted dealers'
+  },
+  fridges: {
+    name: 'Fridges',
+    icon: '🧊',
+    description: 'Single door, double door, side-by-side refrigerators, and mini fridges'
+  },
+  acs: {
+    name: 'ACs',
+    icon: '❄️',
+    description: 'Split ACs, window ACs, portable air conditioners, and AC accessories'
+  },
+  ovens: {
+    name: 'Ovens',
+    icon: '🔥',
+    description: 'Microwave ovens, OTG ovens, convection ovens, and oven accessories'
+  },
+  coolers: {
+    name: 'Coolers',
+    icon: '🌀',
+    description: 'Desert coolers, personal coolers, tower coolers, and cooler parts'
+  },
+  printers: {
+    name: 'Printers',
+    icon: '🖨️',
+    description: 'Inkjet printers, laser printers, all-in-one printers, and printer supplies'
+  },
+  fans: {
+    name: 'Fans',
+    icon: '🌪️',
+    description: 'Ceiling fans, table fans, exhaust fans, and fan accessories'
+  },
+  accessories: {
+    name: 'Accessories',
+    icon: '🔌',
+    description: 'Cables, chargers, power banks, adapters, and electronic accessories'
   }
 };
 
 const subcategories: { [key: string]: string[] } = {
-  electronics: [
-    'mobiles', 'laptops', 'televisions', 'fridges', 'ovens', 
-    'printers', 'fans', 'acs', 'coolers', 'accessories'
-  ],
-  batteries: [
-    'two-wheeler-batteries', 'four-wheeler-batteries', 
-    'inverter-batteries', 'lithium-batteries'
-  ]
+  mobiles: ['smartphones', 'feature-phones', 'mobile-cases', 'chargers'],
+  laptops: ['gaming-laptops', 'business-laptops', 'ultrabooks', 'laptop-accessories'],
+  tvs: ['smart-tvs', 'led-tvs', 'oled-tvs', 'tv-accessories'],
+  fridges: ['single-door', 'double-door', 'side-by-side', 'mini-fridges'],
+  acs: ['split-acs', 'window-acs', 'portable-acs', 'ac-accessories'],
+  ovens: ['microwave-ovens', 'otg-ovens', 'convection-ovens', 'oven-accessories'],
+  coolers: ['desert-coolers', 'personal-coolers', 'tower-coolers', 'cooler-parts'],
+  printers: ['inkjet-printers', 'laser-printers', 'all-in-one', 'printer-supplies'],
+  fans: ['ceiling-fans', 'table-fans', 'exhaust-fans', 'fan-accessories'],
+  accessories: ['cables', 'chargers-acc', 'power-banks', 'adapters']
 };
 
 export default function CategoryPage() {
@@ -49,89 +91,23 @@ export default function CategoryPage() {
 
   const loadCategoryData = async (cat: string) => {
     setLoading(true);
+    
+    // Load mock data directly since backend is not available
+    console.log('Loading mock data for category:', cat);
     try {
-      const { api } = await import('@/lib/api');
+      const { getProductsByCategory, getShopsByCategory } = await import('@/lib/mockData');
       
-      // Get user location for nearby results
-      let userLocation = { latitude: 28.5355, longitude: 77.3910 };
-      if (navigator.geolocation) {
-        try {
-          const position = await new Promise<GeolocationPosition>((resolve, reject) => {
-            navigator.geolocation.getCurrentPosition(resolve, reject, {
-              timeout: 5000,
-              maximumAge: 300000
-            });
-          });
-          userLocation = {
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude
-          };
-        } catch (geoError) {
-          console.log('Could not get location, using default');
-        }
-      }
-
-      // Load products by category
-      const productsResponse = await api.getProductsByCategory(cat);
-      if (productsResponse && productsResponse.data && Array.isArray(productsResponse.data)) {
-        const transformedProducts = productsResponse.data.map((product: any) => ({
-          id: product.id.toString(),
-          name: product.name || 'Unnamed Product',
-          description: product.description || '',
-          price: parseFloat(product.price) || 0,
-          category: product.category || cat,
-          subcategory: product.subcategory || product.category,
-          shopId: product.shop_id?.toString() || '',
-          inStock: product.in_stock !== undefined ? product.in_stock : true,
-          brand: product.brand || '',
-          image: product.image_url || `https://via.placeholder.com/300x300?text=${encodeURIComponent(product.name || 'Product')}`,
-          shop: product.shop ? {
-            id: product.shop.id.toString(),
-            name: product.shop.name || 'Unnamed Shop',
-            address: product.shop.address || 'Address not provided',
-            phone: product.shop.phone || product.shop.whatsapp_number || '',
-            whatsapp: product.shop.whatsapp_number || product.shop.phone || '',
-            location: {
-              latitude: parseFloat(product.shop.latitude) || userLocation.latitude,
-              longitude: parseFloat(product.shop.longitude) || userLocation.longitude
-            },
-            categories: product.shop.categories || [cat],
-            rating: parseFloat(product.shop.rating) || 4.0,
-            isOpen: product.shop.is_open !== undefined ? product.shop.is_open : true
-          } : undefined
-        }));
-        setProducts(transformedProducts);
-      } else {
-        setProducts([]);
-      }
-
-      // Load shops by category
-      const shopsResponse = await api.getShops(userLocation);
-      if (shopsResponse && shopsResponse.data && Array.isArray(shopsResponse.data)) {
-        const categoryShops = shopsResponse.data
-          .filter((shop: any) => shop.categories && shop.categories.includes(cat))
-          .map((shop: any) => ({
-            id: shop.id.toString(),
-            name: shop.name || 'Unnamed Shop',
-            address: shop.address || 'Address not provided',
-            phone: shop.phone || shop.whatsapp_number || '',
-            whatsapp: shop.whatsapp_number || shop.phone || '',
-            location: {
-              latitude: parseFloat(shop.latitude) || userLocation.latitude,
-              longitude: parseFloat(shop.longitude) || userLocation.longitude
-            },
-            categories: shop.categories || [cat],
-            rating: parseFloat(shop.rating) || 4.0,
-            isOpen: shop.is_open !== undefined ? shop.is_open : true,
-            image: shop.image_url || `https://via.placeholder.com/300x200?text=${encodeURIComponent(shop.name || 'Shop')}`,
-            distance: shop.distance || null
-          }));
-        setShops(categoryShops);
-      } else {
-        setShops([]);
-      }
+      // Load mock products by category
+      const mockProducts = getProductsByCategory(cat);
+      setProducts(mockProducts);
+      
+      // Load mock shops by category
+      const mockShops = getShopsByCategory(cat);
+      setShops(mockShops);
+      
+      console.log(`Loaded ${mockProducts.length} products and ${mockShops.length} shops for ${cat}`);
     } catch (error) {
-      console.error('Error loading category data:', error);
+      console.error('Error loading mock data:', error);
       setProducts([]);
       setShops([]);
     } finally {

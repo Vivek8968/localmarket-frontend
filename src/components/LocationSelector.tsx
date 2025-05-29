@@ -13,7 +13,13 @@ const LocationSelector = ({ onLocationChange }: LocationSelectorProps) => {
   const detectLocation = () => {
     setIsDetecting(true);
     
-    if (navigator.geolocation) {
+    if (!navigator.geolocation) {
+      setIsDetecting(false);
+      alert('Geolocation is not supported by this browser.');
+      return;
+    }
+
+    try {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const location = {
@@ -24,14 +30,20 @@ const LocationSelector = ({ onLocationChange }: LocationSelectorProps) => {
           setIsDetecting(false);
         },
         (error) => {
-          console.error('Error getting location:', error);
+          // Handle geolocation error gracefully without logging the error object
           setIsDetecting(false);
           alert('Unable to detect your location. Please enable location services.');
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 300000
         }
       );
-    } else {
+    } catch (error) {
+      // Handle any synchronous errors
       setIsDetecting(false);
-      alert('Geolocation is not supported by this browser.');
+      alert('Unable to detect your location. Please enable location services.');
     }
   };
 

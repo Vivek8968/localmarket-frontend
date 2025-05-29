@@ -16,31 +16,113 @@ const Header = () => {
 
   const categories = [
     {
-      id: 'electronics',
-      name: 'Electronics',
+      id: 'mobiles',
+      name: 'Mobiles',
       icon: '📱',
       subcategories: [
-        { id: 'mobiles', name: 'Mobiles' },
-        { id: 'laptops', name: 'Laptops' },
-        { id: 'televisions', name: 'Televisions' },
-        { id: 'fridges', name: 'Fridges' },
-        { id: 'ovens', name: 'Ovens' },
-        { id: 'printers', name: 'Printers' },
-        { id: 'fans', name: 'Fans' },
-        { id: 'acs', name: 'ACs' },
-        { id: 'coolers', name: 'Coolers' },
-        { id: 'accessories', name: 'Accessories' },
+        { id: 'smartphones', name: 'Smartphones' },
+        { id: 'feature-phones', name: 'Feature Phones' },
+        { id: 'mobile-cases', name: 'Mobile Cases' },
+        { id: 'chargers', name: 'Chargers' },
       ]
     },
     {
-      id: 'batteries',
-      name: 'Batteries',
-      icon: '🔋',
+      id: 'laptops',
+      name: 'Laptops',
+      icon: '💻',
       subcategories: [
-        { id: 'two-wheeler-batteries', name: 'Two Wheeler Batteries' },
-        { id: 'four-wheeler-batteries', name: 'Four Wheeler Batteries' },
-        { id: 'inverter-batteries', name: 'Inverter Batteries' },
-        { id: 'lithium-batteries', name: 'Lithium Batteries' },
+        { id: 'gaming-laptops', name: 'Gaming Laptops' },
+        { id: 'business-laptops', name: 'Business Laptops' },
+        { id: 'ultrabooks', name: 'Ultrabooks' },
+        { id: 'laptop-accessories', name: 'Accessories' },
+      ]
+    },
+    {
+      id: 'tvs',
+      name: 'TVs',
+      icon: '📺',
+      subcategories: [
+        { id: 'smart-tvs', name: 'Smart TVs' },
+        { id: 'led-tvs', name: 'LED TVs' },
+        { id: 'oled-tvs', name: 'OLED TVs' },
+        { id: 'tv-accessories', name: 'TV Accessories' },
+      ]
+    },
+    {
+      id: 'fridges',
+      name: 'Fridges',
+      icon: '🧊',
+      subcategories: [
+        { id: 'single-door', name: 'Single Door' },
+        { id: 'double-door', name: 'Double Door' },
+        { id: 'side-by-side', name: 'Side-by-Side' },
+        { id: 'mini-fridges', name: 'Mini Fridges' },
+      ]
+    },
+    {
+      id: 'acs',
+      name: 'ACs',
+      icon: '❄️',
+      subcategories: [
+        { id: 'split-acs', name: 'Split ACs' },
+        { id: 'window-acs', name: 'Window ACs' },
+        { id: 'portable-acs', name: 'Portable ACs' },
+        { id: 'ac-accessories', name: 'AC Accessories' },
+      ]
+    },
+    {
+      id: 'ovens',
+      name: 'Ovens',
+      icon: '🔥',
+      subcategories: [
+        { id: 'microwave-ovens', name: 'Microwave Ovens' },
+        { id: 'otg-ovens', name: 'OTG Ovens' },
+        { id: 'convection-ovens', name: 'Convection Ovens' },
+        { id: 'oven-accessories', name: 'Oven Accessories' },
+      ]
+    },
+    {
+      id: 'coolers',
+      name: 'Coolers',
+      icon: '🌀',
+      subcategories: [
+        { id: 'desert-coolers', name: 'Desert Coolers' },
+        { id: 'personal-coolers', name: 'Personal Coolers' },
+        { id: 'tower-coolers', name: 'Tower Coolers' },
+        { id: 'cooler-parts', name: 'Cooler Parts' },
+      ]
+    },
+    {
+      id: 'printers',
+      name: 'Printers',
+      icon: '🖨️',
+      subcategories: [
+        { id: 'inkjet-printers', name: 'Inkjet Printers' },
+        { id: 'laser-printers', name: 'Laser Printers' },
+        { id: 'all-in-one', name: 'All-in-One' },
+        { id: 'printer-supplies', name: 'Printer Supplies' },
+      ]
+    },
+    {
+      id: 'fans',
+      name: 'Fans',
+      icon: '🌪️',
+      subcategories: [
+        { id: 'ceiling-fans', name: 'Ceiling Fans' },
+        { id: 'table-fans', name: 'Table Fans' },
+        { id: 'exhaust-fans', name: 'Exhaust Fans' },
+        { id: 'fan-accessories', name: 'Fan Accessories' },
+      ]
+    },
+    {
+      id: 'accessories',
+      name: 'Accessories',
+      icon: '🔌',
+      subcategories: [
+        { id: 'cables', name: 'Cables' },
+        { id: 'chargers-acc', name: 'Chargers' },
+        { id: 'power-banks', name: 'Power Banks' },
+        { id: 'adapters', name: 'Adapters' },
       ]
     }
   ];
